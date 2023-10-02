@@ -21,10 +21,40 @@
               @foreach ($articles as $article)
               <tr class="hover:bg-gray-lighter">
                 <td class="py-4 px-6 border-b border-gray-light dark:border-gray-600">
-                  <h3 class="text-left font-bold text-lg text-gray-dark dark:text-gray-200">{{$article->article}}</h3>
+                  <a href="{{ route('article.show',$article->id) }}">
+                    <p class="text-left text-gray-800 dark:text-gray-200">{{$article->user->name}}</p>
+                    <h3 class="text-left font-bold text-lg text-gray-800 dark:text-gray-200">{{$article->article}}</h3>
+                  </a>
                   <div class="flex">
+                    <!-- 🔽 追加 -->
+                    <!-- favorite 状態で条件分岐 -->
+                    @if($article->users()->where('user_id', Auth::id())->exists())
+                    <!-- unfavorite ボタン -->
+                    <form action="{{ route('unfavorites',$article) }}" method="POST" class="text-left">
+                      @csrf
+                      <x-primary-button class="ml-3">
+                        <svg class="h-6 w-6 text-red-500" fill="red" viewBox="0 0 24 24" stroke="red">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        {{ $article->users()->count() }}
+                      </x-primary-button>
+                    </form>
+                    @else
+                    <!-- favorite ボタン -->
+                    <form action="{{ route('favorites',$article) }}" method="POST" class="text-left">
+                      @csrf
+                      <x-primary-button class="ml-3">
+                        <svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="gray">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        {{ $article->users()->count() }}
+                      </x-primary-button>
+                    </form>
+                    @endif
+
+
                     <!-- 更新ボタン -->
-                    <!-- 削除ボタン -->
+                    <!-- 編集ボタン -->
                   </div>
                 </td>
               </tr>

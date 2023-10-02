@@ -3,8 +3,14 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\FavoriteController;
 
-Route::resource('article', ArticleController::class);
+Route::middleware('auth')->group(function () {
+    Route::post('article/{article}/favorites', [FavoriteController::class, 'store'])->name('favorites');
+    Route::post('article/{article}/unfavorites', [FavoriteController::class, 'destroy'])->name('unfavorites');
+    Route::get('/article/mypage', [ArticleController::class, 'mydata'])->name('article.mypage');
+    Route::resource('article', ArticleController::class);
+});
 
 Route::get('/', function () {
     return view('welcome');

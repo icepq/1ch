@@ -21,4 +21,13 @@ class Article extends Model
     {
         return self::orderBy('updated_at', 'desc')->get();
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withTimestamps();
+    }
 }
