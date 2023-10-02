@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// 🔽 2行追加
 use Validator;
 use App\Models\Article;
+use Auth;
+use App\Models\User;
 
 class ArticleController extends Controller
 {
@@ -43,10 +44,11 @@ class ArticleController extends Controller
                 ->withInput()
                 ->withErrors($validator);
         }
-        // create()は最初から用意されている関数
-        // 戻り値は挿入されたレコードの情報
-        $result = Article::create($request->all());
-        // ルーティング「todo.index」にリクエスト送信（一覧ページに移動）
+        // 🔽 編集 フォームから送信されてきたデータとユーザIDをマージし，DBにinsertする
+        $data = $request->merge(['user_id' => Auth::user()->id])->all();
+        $result = Article::create($data);
+
+        // tweet.index」にリクエスト送信（一覧ページに移動）
         return redirect()->route('article.index');
     }
 
@@ -56,7 +58,8 @@ class ArticleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $article = Article::find($id);
+        return response()->view('article.show', compact('article'));
     }
 
     /**
@@ -81,5 +84,15 @@ class ArticleController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function mydata()
+    {
+        // Userモデルに定義したリレーションを使用してデータを取得する．
+        $articles = User::query()
+            ->find(Auth::user()->id)
+            ->userArticles()
+            ->orderBy('created_at','desc')
+            ->get();
+        return response()->view('article.index', compact('articles'));
     }
 }
